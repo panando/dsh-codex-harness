@@ -1,6 +1,6 @@
 {
   "name": "@panando/dsh-codex-harness",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A Codex-style coding agent preset for DeepSeek Harness (DSH) 0.2.x — terminal, filesystem, planning, web search, and skills in one bundle.",
   "keywords": [
     "dsh",
