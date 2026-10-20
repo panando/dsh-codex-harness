@@ -1,7 +1,7 @@
 {
   "name": "@panando/dsh-codex-harness",
   "version": "0.1.2",
-  "description": "A Codex-style coding agent preset for DeepSeek Harness (DSH) 0.2.x — terminal, filesystem, planning, web search, and skills in one bundle.",
+  "description": "DSH 的 Codex 模式预设：先规划后动手的编码智能体（Codex-mode coding preset for DeepSeek Harness）。",
   "keywords": [
     "dsh",
     "deepseek-harness",

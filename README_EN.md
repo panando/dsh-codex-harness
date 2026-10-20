@@ -1,40 +1,56 @@
 # dsh-codex-harness
 
-A Codex-style coding agent preset (bundle) for DeepSeek Harness (DSH) 0.2.x. After installation, the mode selector in DSH gains a **Codex mode**: an engineering-oriented behavior contract plus a complete tool set for reading and writing code, running commands, and looking things up.
+[![npm version](https://img.shields.io/npm/v/@panando/dsh-codex-harness.svg)](https://www.npmjs.com/package/@panando/dsh-codex-harness)
+[![license](https://img.shields.io/npm/l/@panando/dsh-codex-harness.svg)](./LICENSE)
 
-## Overview
+**A coding mode for DeepSeek Harness (DSH).**
 
-A DSH session's behavior is defined by its *preset*: a list that names the identity line, the behavior contract, and the tools the session may use. DSH ships a few built-in presets; the standard preset targets general conversation.
+Install this package and the DSH mode selector gains a **Codex mode**. A session that uses it inspects the repository before touching files, searches with the session's own search tools instead of shelling out, runs long commands in the background, and tells you what changed and how it was verified. Other modes are untouched, and DSH keeps working without this package.
 
-Coding is not quite conversation. When writing code you want the agent to inspect the repository before touching it, to search with the session's own search tools instead of shelling out, and to report what changed and how it was verified. Those habits belong in a system prompt, but they do not belong in a chat-oriented standard mode.
+## The problem it solves
 
-This package registers an independent preset that bundles those habits with a tool set. Standard mode is untouched; DSH keeps working without this package.
+The standard preset that ships with DSH targets general conversation: it can chat, look things up, and change a file or two. Coding is a different job. Four things go wrong most often:
+
+| Problem | How it shows up | What Codex mode does |
+| --- | --- | --- |
+| Acting before looking | Half of the change is done when the repository turns out to be shaped differently | Explore read-only first, lay out a plan, then edit |
+| Search by guesswork | Repeated `grep` calls over a large repository: slow and often blocked by the sandbox | Search straight through the built-in `grep` and `glob` tools |
+| Long commands block the chat | A build takes minutes and nothing else can happen | Run it as a background job and keep talking |
+| Claims without evidence | "Fixed" with no test run and no log | The contract requires real output in the delivery |
+
+Those habits belong in a system prompt, but they do not belong in a chat-oriented standard mode. So this package registers an **independent preset** that bundles the habits with a tool set, and that preset applies only to its own sessions.
 
 ## Features
 
-- **Independent preset** — appears as "Codex 模式" in the mode selector and applies only to new sessions.
-- **Identity line** — opens the system prompt by describing the agent as a coding agent and naming the current model.
-- **Behavior contract** — read before edit, prefer built-in search tools, plan before executing, back up completion claims with evidence.
-- **Terminal** — bash on macOS and Linux, PowerShell on Windows, selected automatically per platform.
-- **Files** — read and write files, search by content or filename, governed by the session's file policy.
-- **Background jobs** — long-running commands can run in the background while the conversation continues.
-- **Plan mode** — explore read-only first, produce a plan you can execute, then make changes.
-- **Context compaction** — compacts long conversations and prunes oversized tool output.
-- **Web** — web search and page fetch.
-- **Skills** — load skills from the filesystem and invoke them by name.
-- **Collaboration** — goal tracking, todo lists, user questions, and result presentation.
-- **Settings card** — a read-only card under Settings → Plugins → `@panando/dsh-codex-harness` telling you where the prompt lives and how to reload changes.
+| Capability | What it does |
+| --- | --- |
+| Engineering behavior contract | Read before edit, plan first, search before shelling out, back claims with evidence; the text lives in `lib/prompts.js` |
+| Terminal | bash on macOS and Linux, PowerShell on Windows, picked automatically per platform |
+| Files and search | Read and write files, search by filename or content, all under the session's own file policy |
+| Plan mode | Explore read-only, produce a plan you can execute, then start changing files |
+| Background jobs | Builds, tests, and installs run in the background while the conversation continues |
+| Context compaction | Long conversations are compacted and oversized tool output is pruned |
+| Web | Web search and page fetch |
+| Skills | Load skills from the filesystem and invoke them by name |
+| Collaboration | Goal tracking, todo lists, user questions, and result presentation |
+| Settings card | A read-only card under Settings → Plugins → `@panando/dsh-codex-harness` telling you where the prompt lives and how to reload changes |
 
 Every tool comes from an official DSH plugin package. This bundle only assembles them for the Codex mode; it does not reimplement them.
+
+## When to use it
+
+Good fit: changing features, fixing bugs, or writing tests in an existing repository; tasks where you must understand the structure before touching it; long tasks that involve repeated builds and test runs.
+
+Poor fit: purely conversational sessions, writing prose, or looking things up without touching code — the standard mode is lighter for those.
 
 ## Requirements
 
 | Component | Version | Notes |
 | --- | --- | --- |
-| DSH | 0.2.1-rc.2 or another 0.2.x release | The 21 DSH plugin dependencies are pinned to 0.2.1-rc.2 |
+| DSH | 0.2.1-rc.2 or another 0.2.x release | The DSH plugin dependencies are pinned to 0.2.1-rc.2 |
 | Node.js | 18 or later | 22+ recommended |
 
-The DSH plugins are declared as peer dependencies: the host DSH provides them and this package does not install a second copy. If your DSH version differs, the plugin manager reports an incompatibility at install time; update the versions in `peerDependencies` to the DSH version you actually run.
+The DSH plugins are declared as peer dependencies: the host DSH provides them and this package does not install a second copy. If your DSH version differs, the install reports an incompatibility; update the versions in `peerDependencies` to the DSH version you actually run.
 
 ## Installation
 
