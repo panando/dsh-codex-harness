@@ -47,10 +47,14 @@ Poor fit: purely conversational sessions, writing prose, or looking things up wi
 
 | Component | Version | Notes |
 | --- | --- | --- |
-| DSH | 0.2.1-rc.2 or another 0.2.x release | The DSH plugin dependencies are pinned to 0.2.1-rc.2 |
+| DSH | 0.2.1-rc.2 or newer, below 0.3.0 (prereleases included) | Declared once as an `engines.dsh` range, not pinned per version |
 | Node.js | 18 or later | 22+ recommended |
 
-The DSH plugins are declared as peer dependencies: the host DSH provides them and this package does not install a second copy. If your DSH version differs, the install reports an incompatibility; update the versions in `peerDependencies` to the DSH version you actually run.
+This package states the DSH versions it supports in one field, `engines.dsh` in `package.json`, whose value is `^0.2.1-rc.2`. In semantic versioning (the shared rules for comparing version numbers) that means every version from 0.2.1-rc.2 up to, but not including, 0.3.0, including prereleases such as `-rc.1` and `-rc.2`.
+
+DSH compares that range with the running version whenever it installs or enables a plugin. So when DSH moves from 0.2.1-rc.2 to 0.2.1-rc.3, 0.2.2, or another release on the same 0.2 line, this package keeps working without a version bump or a new release. The DSH plugin packages listed in `peerDependencies` use the same range, so the two places agree.
+
+If your DSH version falls outside the range (a future 0.3.0, say), the install still reports an incompatibility. You then have two options. The first is to grant a one-off exemption for that exact plugin version on that exact DSH version with `dsh plugin allow-version`, which the plugin manager UI offers as well. The second is to upgrade this package to a release that declares the new range.
 
 ## Installation
 
